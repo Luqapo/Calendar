@@ -14,7 +14,7 @@ describe('User service', () => {
 
   it('creates user with correct fields and hashed secret, returns user and token', async () => {
     const testUser = {
-      email: 'createTestUserName',
+      email: 'createTestUserName@test.com',
       password: 'testPassword',
     };
     const createdUser = await userService.create(testUser);
@@ -28,7 +28,7 @@ describe('User service', () => {
   });
 
   it('returns user by id', async () => {
-    const testUser = await userService.create({ email: 'find user test name', password: 'findUser' });
+    const testUser = await userService.create({ email: 'findName@test.com', password: 'findUser' });
     const user = await userService.get(testUser.id);
     expect(String(user._id)).to.equal(String(testUser.id));
     expect(user.email).to.equal(testUser.email);
@@ -38,7 +38,7 @@ describe('User service', () => {
   });
 
   it('returns user\'s public fields', async () => {
-    const testUser = await userService.create({ email: 'public fields test', password: 'publicFields' });
+    const testUser = await userService.create({ email: 'publicTest@test.com', password: 'publicFields' });
     const user = await userService.get(testUser.id);
     const userPublic = user.getPublicFields();
     expect(userPublic).to.have.property('id');

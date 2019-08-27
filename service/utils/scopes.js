@@ -17,6 +17,11 @@ module.exports = [
     method: 'POST',
     scope: 'public',
   }, {
+    // getting own user
+    path: /^\/user\/?$/,
+    method: 'GET',
+    scope: 'user',
+  }, {
     // service status, to enable automated health check
     path: /^\/status\/?$/,
     method: 'GET',
