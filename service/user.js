@@ -9,6 +9,9 @@ async function createUser(u) {
   if(!u.email || !(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(u.email))) {
     throw new Error('Email required');
   }
+  if(await User.findOne({ email: u.email })) {
+    throw new Error('Account with this email already exist');
+  }
   if(!u.password || u.password.length < 6) {
     throw new Error('Password required, minimal length 6 characters');
   }
@@ -23,7 +26,21 @@ async function getUser(id) {
   return user;
 }
 
+async function login(u) {
+  const user = await User.findOne({ email: u.email });
+  if(!user) {
+    throw new Error('User not found');
+  }
+  const passwordIsValid = bcrypt.compareSync(u.password, user.password);
+  if(!passwordIsValid) {
+    throw new Error('Wrong password');
+  }
+  const token = jwt.sign({ email: u.email, userId: user._id }, config.secret, { expiresIn: '1h' });
+  return Object.assign({ token }, user.getPublicFields());
+}
+
 Object.assign(module.exports, {
   create: createUser,
   get: getUser,
+  login,
 });

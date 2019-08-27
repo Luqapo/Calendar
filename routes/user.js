@@ -19,4 +19,14 @@ router.get('/', (ctx, next) => {
   return next();
 });
 
+router.post('/login', async (ctx, next) => {
+  try {
+    const user = await service.user.login(ctx.request.body);
+    ctx.status = 200;
+    ctx.body = user;
+  } catch(err) {
+    ctx.throw(401, err.message);
+  }
+});
+
 module.exports = router;

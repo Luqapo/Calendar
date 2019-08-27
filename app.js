@@ -28,8 +28,6 @@ app.use(bodyParser({
   enableTypes: ['json'],
 }));
 
-
-/* istanbul ignore next catch-all error handling, tests meaningless */
 app.use(async (ctx, next) => {
   try {
     await next();
@@ -38,10 +36,6 @@ app.use(async (ctx, next) => {
     console.error(err.stack);
     ctx.status = err.statusCode || err.status || 500;
     ctx.body = { error: err.message };
-    if(ctx.status === 500) {
-      // eslint-disable-next-line no-debugger
-      debugger;
-    }
   }
 });
 

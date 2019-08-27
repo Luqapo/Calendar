@@ -47,4 +47,20 @@ describe('User service', () => {
     expect(userPublic.email).to.equal(testUser.email);
     expect(userPublic.createdAt instanceof Date).to.equal(true);
   });
+  it('ligin user and return token', async () => {
+    const testUser = await userService.create({ email: 'loginTest@test.com', password: 'loginFields' });
+    delete testUser.token;
+    const checkLogin = await userService.login({ email: testUser.email, password: 'loginFields' });
+    delete checkLogin.token;
+    expect(testUser).to.deep.equal(checkLogin);
+  });
+  it('throws error when user dont found', async () => {
+    await expect(userService.login({ email: 'testUser.email', password: 'loginFields' })).to
+      .be.rejectedWith('User not found');
+  });
+  it('throws error when try to login with wrong password', async () => {
+    const testUser = await userService.create({ email: 'loginTest1@test.com', password: 'loginFields' });
+    await expect(userService.login({ email: testUser.email, password: 'loginCheck' })).to
+      .be.rejectedWith('Wrong password');
+  });
 });

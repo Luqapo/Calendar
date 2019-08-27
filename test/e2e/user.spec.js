@@ -14,9 +14,10 @@ describe('User endpoints', () => {
   describe('POST /user', () => {
     it('creates new user', () => {
       const userData = {
-        email: 'api-user-test@test.com',
+        email: 'api-user-test1@test.com',
         password: 'testPassword',
       };
+      let checkUser;
       return request(app.callback())
         .post('/user')
         .send(userData)
@@ -30,16 +31,34 @@ describe('User endpoints', () => {
           const userFromDb = await User.findOne({ _id: res.body.id });
           expect(userFromDb.email).to.equal(res.body.email);
           expect(res.body.token).to.be.an('string');
+          checkUser = res.body;
           return res.body.token;
         })
-        .then(sid => request(app.callback())
+        .then(token => request(app.callback())
           .get('/user')
-          .set('Authorization', `Bearer ${sid}`)
-          .expect(200));
+          .set('Authorization', `Bearer ${token}`)
+          .expect(200)
+          .then((res) => {
+            delete checkUser.token;
+            expect(res.body).to.deep.equal(checkUser);
+          }));
+    });
+    it('throws error (Account whit this email already exist) when email is missing', () => {
+      const userData = {
+        email: 'api-user-test1@test.com',
+        password: 'testPassword',
+      };
+      return request(app.callback())
+        .post('/user')
+        .send(userData)
+        .expect(422)
+        .then(async (res) => {
+          expect(res.body.error).to.equal('Account with this email already exist');
+        });
     });
     it('throws error Passwor required when password is missing', () => {
       const userData = {
-        email: 'api-user-test@test.com',
+        email: 'api-user-test2@test.com',
       };
       return request(app.callback())
         .post('/user')
@@ -51,7 +70,7 @@ describe('User endpoints', () => {
     });
     it('throws error Passwor required when password is to short', () => {
       const userData = {
-        email: 'api-user-test@test.com',
+        email: 'api-user-test3@test.com',
         password: 'test',
       };
       return request(app.callback())
@@ -62,7 +81,7 @@ describe('User endpoints', () => {
           expect(res.body.error).to.equal('Password required, minimal length 6 characters');
         });
     });
-    it('throws error Email required when email is missing', () => {
+    it('throws error (Email required) when email is missing', () => {
       const userData = {
         password: 'testPassword',
       };
