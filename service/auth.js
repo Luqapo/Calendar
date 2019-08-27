@@ -5,7 +5,7 @@ const config = require('../config/config')[env];
 
 const User = require('../model/user');
 
-module.exports = async (ctx, next) => {
+async function auth(ctx) {
   const token = ctx.get('Authorization').split(' ')[1];
   if(!token) {
     ctx.throw(401, 'Unauthorized');
@@ -20,5 +20,33 @@ module.exports = async (ctx, next) => {
     ctx.throw(401, 'Not authenticated');
   }
   ctx.state.user = await User.findById(decodedToken.userId);
-  next();
+}
+
+module.exports = {
+  middleware(scopes) {
+    return async (ctx, next) => {
+      let found = false;
+      for(let i=0, l=scopes.length; i<l && !found; i++) {
+        if(scopes[i].method === ctx.method && scopes[i].path.test(ctx.path)) {
+          found = true;
+          switch(scopes[i].scope) {
+            case 'user': {
+              // eslint-disable-next-line no-await-in-loop
+              await auth(ctx);
+              break;
+            }
+            case 'app':
+              // TODO: check app token
+              break;
+            case 'public':
+              break;
+            // istanbul ignore next
+            default:
+              ctx.throw(500, `Invalid scope: ${scopes[i].scope}`);
+          }
+        }
+      }
+      return next();
+    };
+  },
 };

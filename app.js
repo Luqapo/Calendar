@@ -6,6 +6,7 @@ const mount = require('koa-mount');
 const bodyParser = require('koa-bodyparser');
 
 const router = require('./routes');
+const scopes = require('./service/utils/scopes');
 
 /* istanbul ignore next */
 const env = process.env.NODE_ENV || 'test';
@@ -35,9 +36,6 @@ app.use(async (ctx, next) => {
   } catch(err) {
     // eslint-disable-next-line no-console
     console.error(err.stack);
-    if(ctx.status === 401 && !ctx.response.get('WWW-Authenticate')) {
-      ctx.set('WWW-Autenthicate', 'Bearer scope="user"');
-    }
     ctx.status = err.statusCode || err.status || 500;
     ctx.body = { error: err.message };
     if(ctx.status === 500) {
@@ -47,7 +45,7 @@ app.use(async (ctx, next) => {
   }
 });
 
-app.use(service.auth);
+app.use(service.auth.middleware(scopes));
 
 app.use(router());
 
