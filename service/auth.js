@@ -1,14 +1,14 @@
 const jwt = require('jsonwebtoken');
-
+/* istanbul ignore next */
 const env = process.env.NODE_ENV || 'test';
 const config = require('../config/config')[env];
 
-const User = require('../model/token');
+const User = require('../model/user');
 
-module.exports = (ctx, next) => {
-  const token = ctx.response.get('x-acces-token').split(' ')[1];
+module.exports = async (ctx, next) => {
+  const token = ctx.get('Authorization').split(' ')[1];
   if(!token) {
-    ctx.throw(401, 'Not authenticated.');
+    ctx.throw(401, 'Unauthorized');
   }
   let decodedToken;
   try {
@@ -17,8 +17,8 @@ module.exports = (ctx, next) => {
     ctx.throw(500, 'Auth fail!');
   }
   if(!decodedToken) {
-    ctx.throw(401, 'Not authenticated.');
+    ctx.throw(401, 'Not authenticated');
   }
-  ctx.state.user = User.findOne(decodedToken.userId);
+  ctx.state.user = await User.findById(decodedToken.userId);
   next();
 };

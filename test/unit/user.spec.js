@@ -1,5 +1,4 @@
 const { expect } = require('chai');
-const sinon = require('sinon');
 
 const userService = require('../../service/user');
 const User = require('../../model/user');
@@ -13,7 +12,7 @@ describe('User service', () => {
     await User.deleteMany({});
   });
 
-  it.only('creates user with correct fields and hashed secret, returns user and token', async () => {
+  it('creates user with correct fields and hashed secret, returns user and token', async () => {
     const testUser = {
       email: 'createTestUserName',
       password: 'testPassword',
@@ -28,7 +27,7 @@ describe('User service', () => {
     expect(dbUser.updatedAt instanceof Date).to.equal(true);
   });
 
-  it.only('returns user by id', async () => {
+  it('returns user by id', async () => {
     const testUser = await userService.create({ email: 'find user test name', password: 'findUser' });
     const user = await userService.get(testUser.id);
     expect(String(user._id)).to.equal(String(testUser.id));
@@ -38,7 +37,7 @@ describe('User service', () => {
     expect(user.updatedAt instanceof Date).to.equal(true);
   });
 
-  it.only('returns user\'s public fields', async () => {
+  it('returns user\'s public fields', async () => {
     const testUser = await userService.create({ email: 'public fields test', password: 'publicFields' });
     const user = await userService.get(testUser.id);
     const userPublic = user.getPublicFields();
@@ -47,18 +46,5 @@ describe('User service', () => {
     expect(String(userPublic.id)).to.equal(String(testUser.id));
     expect(userPublic.email).to.equal(testUser.email);
     expect(userPublic.createdAt instanceof Date).to.equal(true);
-  });
-
-  it('updates user and returns updated user', async () => {
-    const testUser = await userService.create({ name: 'update user test' }, app.context.content);
-    const updates = { name: 'someUpdatedName' };
-    const updatedUser = await userService.update(testUser.uid, updates);
-    expect(updatedUser.uid).to.equal(testUser.uid);
-    expect(updatedUser.name).to.equal(updates.name);
-    expect(updatedUser.hSecret).to.be.a('string');
-    expect(updatedUser.createdAt instanceof Date).to.equal(true);
-    expect(updatedUser.updatedAt instanceof Date).to.equal(true);
-    const updatedUserDb = await User.findById(User.idFromUid(testUser.uid));
-    expect(updatedUser).to.deep.equal(updatedUserDb);
   });
 });
