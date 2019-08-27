@@ -35,7 +35,7 @@ module.exports = {
               await auth(ctx);
               break;
             }
-            case 'app':
+            case 'admin':
               // TODO: check app token
               break;
             case 'public':
