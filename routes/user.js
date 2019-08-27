@@ -27,6 +27,7 @@ router.post('/login', async (ctx, next) => {
   } catch(err) {
     ctx.throw(401, err.message);
   }
+  next();
 });
 
 module.exports = router;

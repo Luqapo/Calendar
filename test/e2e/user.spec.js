@@ -94,4 +94,28 @@ describe('User endpoints', () => {
         });
     });
   });
+  describe('POST /user/login', () => {
+    it('returns 200 and token', async () => {
+      it('creates new user', () => {
+        const userData = {
+          email: 'api-user-test1@test.com',
+          password: 'testPassword',
+        };
+        return request(app.callback())
+          .post('/user/login')
+          .send(userData)
+          .expect(200)
+          .then(async (res) => {
+            expect(res.body).to.have.property('id');
+            expect(res.body).to.have.property('email');
+            expect(res.body).to.have.property('createdAt');
+            expect(res.body.id).to.be.a('string');
+            expect(res.body.email).to.equal(userData.email);
+            const userFromDb = await User.findOne({ _id: res.body.id });
+            expect(userFromDb.email).to.equal(res.body.email);
+            expect(res.body.token).to.be.an('string');
+          });
+      });
+    });
+  });
 });
