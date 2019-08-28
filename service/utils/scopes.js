@@ -26,5 +26,15 @@ module.exports = [
     path: /^\/status\/?$/,
     method: 'GET',
     scope: 'public',
+  }, {
+    // creating user
+    path: /^\/reservation\/?$/,
+    method: 'POST',
+    scope: 'user',
+  }, {
+    // creating user
+    path: /^\/calendar\/?$/,
+    method: 'POST',
+    scope: 'admin',
   },
 ];

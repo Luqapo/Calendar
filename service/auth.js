@@ -5,7 +5,7 @@ const config = require('../config/config')[env];
 
 const User = require('../model/user');
 
-async function auth(ctx) {
+async function auth(ctx, admin) {
   const token = ctx.get('Authorization').split(' ')[1];
   if(!token) {
     ctx.throw(401, 'Unauthorized');
@@ -20,6 +20,9 @@ async function auth(ctx) {
     ctx.throw(401, 'Not authenticated');
   }
   ctx.state.user = await User.findById(decodedToken.userId);
+  if(admin && !ctx.state.user.admin) {
+    ctx.throw(401, 'Unauthorized!');
+  }
 }
 
 module.exports = {
@@ -36,7 +39,8 @@ module.exports = {
               break;
             }
             case 'admin':
-              // TODO: check app token
+              // eslint-disable-next-line no-await-in-loop
+              await auth(ctx, true);
               break;
             case 'public':
               break;

@@ -25,6 +25,23 @@ describe('User service', () => {
     expect(dbUser.updatedAt instanceof Date).to.equal(true);
   });
 
+  it('creates admin user with correct fields and hashed secret, returns user and token', async () => {
+    const testUser = {
+      email: 'createTestAdmin@test.com',
+      password: 'testPassword',
+      admin: true,
+    };
+    const createdUser = await userService.create(testUser);
+    expect(createdUser.email).to.equal(testUser.email);
+    expect(createdUser.createdAt instanceof Date).to.equal(true);
+    const dbUser = await User.findOne({ email: createdUser.email });
+    expect(dbUser.email).to.equal(testUser.email);
+    expect(dbUser.password).to.be.a('string');
+    expect(dbUser.createdAt instanceof Date).to.equal(true);
+    expect(dbUser.updatedAt instanceof Date).to.equal(true);
+    expect(dbUser.admin).to.equal(true);
+  });
+
   it('returns user by id', async () => {
     const testUser = await userService.create({ email: 'findName@test.com', password: 'findUser' });
     const user = await userService.get(testUser.id);

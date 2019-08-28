@@ -20,6 +20,9 @@ const reservationSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  blocked: {
+    type: Boolean,
+  },
 }, {
   timestamps: true,
 });

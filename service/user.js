@@ -16,7 +16,11 @@ async function createUser(u) {
     throw new Error('Password required, minimal length 6 characters');
   }
   const hashedPAssword = bcrypt.hashSync(u.password, 8);
-  const newUser = await User.create({ email: u.email, password: hashedPAssword });
+  const newUser = await User.create({
+    email: u.email,
+    password: hashedPAssword,
+    ...(u.admin && { admin: true }),
+  });
   const token = jwt.sign({ email: u.email, userId: newUser._id }, config.secret, { expiresIn: '1h' });
   return Object.assign({ token }, newUser.getPublicFields());
 }
