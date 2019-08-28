@@ -82,12 +82,13 @@ describe('Reservation endpoints', () => {
     });
   });
   describe('POST /reservation/block', () => {
-    it('blocks hour and return 201', () => {
+    it('blocks hour and return 201', async () => {
       const userData = {
         email: 'test-reservationblock1@test.com',
         password: 'testPassword',
         admin: true,
       };
+      await service.user.create(userData);
       const reservation = {
         hour: 10,
         title: 'testREservation 1',
@@ -95,30 +96,25 @@ describe('Reservation endpoints', () => {
       };
       let checkUser;
       return request(app.callback())
-        .post('/user')
+        .post('/user/login')
         .send(userData)
-        .expect(201)
-        .then(() => {})
-        .then(() => request(app.callback())
-          .post('/user/login')
-          .send(userData)
-          .expect(200)
+        .expect(200)
+        .then((res) => {
+          checkUser = res.body;
+          return res.body.token;
+        })
+        .then(token => request(app.callback())
+          .post('/reservation/block')
+          .set('Authorization', `Bearer ${token}`)
+          .send(reservation)
+          .expect(201)
           .then((res) => {
-            checkUser = res.body;
-            return res.body.token;
-          })
-          .then(token => request(app.callback())
-            .post('/reservation/block')
-            .set('Authorization', `Bearer ${token}`)
-            .send(reservation)
-            .expect(201)
-            .then((res) => {
-              expect(res.body.user).to.equal(checkUser.id);
-              expect(res.body.title).to.equal(reservation.title);
-              expect(res.body.hour).to.equal(reservation.hour);
-              expect(res.body.blocked).to.equal(true);
-              expect(typeof res.body._id).to.equal('string');
-            })));
+            expect(res.body.user).to.equal(checkUser.id);
+            expect(res.body.title).to.equal(reservation.title);
+            expect(res.body.hour).to.equal(reservation.hour);
+            expect(res.body.blocked).to.equal(true);
+            expect(typeof res.body._id).to.equal('string');
+          }));
     });
     it('returns 401 nad error(Unauthorized) if user is not a admin', () => {
       const userData = {
@@ -151,32 +147,28 @@ describe('Reservation endpoints', () => {
     });
   });
   describe('GET /reservation', () => {
-    it('returns all reservations', () => {
+    it('returns all reservations', async () => {
       const userData = {
         email: 'test-reservationGet1@test.com',
         password: 'testPassword',
         admin: true,
       };
+      await service.user.create(userData);
       return request(app.callback())
-        .post('/user')
+        .post('/user/login')
         .send(userData)
-        .expect(201)
-        .then(() => {})
-        .then(() => request(app.callback())
-          .post('/user/login')
-          .send(userData)
+        .expect(200)
+        .then(res => res.body.token)
+        .then(token => request(app.callback())
+          .get('/reservation')
+          .set('Authorization', `Bearer ${token}`)
           .expect(200)
-          .then(res => res.body.token)
-          .then(token => request(app.callback())
-            .get('/reservation')
-            .set('Authorization', `Bearer ${token}`)
-            .expect(200)
-            .then(async (res) => {
-              const all = [];
-              const days = await Day.find({});
-              days.forEach(d => all.push(...d.reservations));
-              expect(res.body.length).to.equal(all.length);
-            })));
+          .then(async (res) => {
+            const all = [];
+            const days = await Day.find({});
+            days.forEach(d => all.push(...d.reservations));
+            expect(res.body.length).to.equal(all.length);
+          }));
     });
   });
   describe('DELTE /reservation', () => {

@@ -5,6 +5,7 @@ const router = new Router({ prefix: '/user' });
 
 router.post('/', async (ctx, next) => {
   try {
+    delete ctx.request.body.admin;
     const user = await service.user.create(ctx.request.body);
     ctx.status = 201;
     ctx.body = user;

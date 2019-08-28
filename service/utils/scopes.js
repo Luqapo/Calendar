@@ -61,5 +61,25 @@ module.exports = [
     path: /^\/calendar\/?$/,
     method: 'POST',
     scope: 'admin',
+  }, {
+    // creating user
+    path: /^\/stats\/?$/,
+    method: 'GET',
+    scope: 'user',
+  }, {
+    // creating user
+    path: /^\/stats\/?$/,
+    method: 'GET',
+    scope: 'admin',
+  }, {
+    // creating user
+    path: /^\/calendar\/?$/,
+    method: 'GET',
+    scope: 'user',
+  }, {
+    // creating user
+    path: /^\/calendar\/?$/,
+    method: 'GET',
+    scope: 'admin',
   },
 ];

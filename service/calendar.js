@@ -6,8 +6,8 @@ const env = process.env.NODE_ENV || 'test';
 const config = require('../config/config')[env];
 
 async function getDay(obj, day) {
-  const data = await Day.findOne({ date: day });
-  obj[day] = data || {};
+  const data = await Day.findOne({ date: day }) || {};
+  obj[day] = data.reservations || {};
 }
 
 async function get() {
@@ -35,12 +35,7 @@ async function set(data) {
   return calendar.getPublicFields();
 }
 
-async function update(data) {
-  return Calendar.findOneAndUpdate({}, { $set: data });
-}
-
 module.exports = {
   get,
   set,
-  update,
 };

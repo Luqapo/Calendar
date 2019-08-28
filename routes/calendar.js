@@ -14,10 +14,10 @@ router.post('/', async (ctx, next) => {
   return next();
 });
 
-// router.get('/', (ctx, next) => {
-//   ctx.body = ctx.state.user.getPublicFields();
-//   return next();
-// });
+router.get('/', async (ctx, next) => {
+  ctx.body = await service.calendar.get();
+  return next();
+});
 
 
 module.exports = router;
