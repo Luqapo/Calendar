@@ -28,9 +28,20 @@ module.exports = [
     scope: 'public',
   }, {
     // creating user
+    path: /^\/reservation\/block\/?$/,
+    method: 'POST',
+    scope: 'admin',
+  }, {
+    // creating user
     path: /^\/reservation\/?$/,
     method: 'POST',
     scope: 'user',
+  },
+  {
+    // creating user
+    path: /^\/reservation\/?$/,
+    method: 'GET',
+    scope: 'admin',
   }, {
     // creating user
     path: /^\/calendar\/?$/,

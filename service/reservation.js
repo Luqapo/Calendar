@@ -6,12 +6,10 @@ async function set(r, userId) {
   if(r.hour < calendar.workStart || r.hour > calendar.workEnd) {
     throw new Error('Reservation not possible for this hour');
   }
-  const date = r.day;
-  delete r.day;
-  let day = await Day.findOne({ date });
+  let day = await Day.findOne({ date: r.date });
   if(!day) {
     day = await Day.create({
-      date,
+      date: r.date,
     });
   }
   const checkHour = day.reservations.find(i => i.hour === r.hour);
@@ -29,12 +27,10 @@ async function set(r, userId) {
 }
 
 async function block(r, userId) {
-  const date = r.day;
-  delete r.day;
-  let day = await Day.findOne({ date });
+  let day = await Day.findOne({ date: r.date });
   if(!day) {
     day = await Day.create({
-      date,
+      date: r.date,
     });
   }
   const checkHour = day.reservations.find(i => i.hour === r.hour);
@@ -49,7 +45,16 @@ async function block(r, userId) {
   return newReservation._doc;
 }
 
+async function getAll() {
+  console.log(await Day.find({}));
+  const all = [];
+  const days = await Day.find({});
+  days.forEach(d => all.push(...d.reservations));
+  return all.map(i => i._doc);
+}
+
 module.exports = {
   set,
   block,
+  getAll,
 };

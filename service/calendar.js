@@ -27,6 +27,9 @@ async function get() {
 }
 
 async function set(data) {
+  if(!data.workStart || !data.workEnd) {
+    throw new Error('workStart and workEnd hour required');
+  }
   await Calendar.deleteMany({});
   const calendar = await Calendar.create(data);
   return calendar.getPublicFields();

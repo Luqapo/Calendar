@@ -14,7 +14,7 @@ describe('Calendar endpoints', () => {
     await Calendar.deleteMany({});
   });
   describe('POST /calendar', () => {
-    it('creates new user', () => {
+    it('creates new calendar', () => {
       const userData = {
         email: 'test-admin1@test.com',
         password: 'testPassword',
@@ -27,7 +27,6 @@ describe('Calendar endpoints', () => {
           { date: '2019-9-1' }, { date: '2019-9-2' }, { date: '2019-9-14' }, { date: '2019-9-25' },
         ],
       };
-      let checkUser;
       return request(app.callback())
         .post('/user')
         .send(userData)
@@ -37,56 +36,49 @@ describe('Calendar endpoints', () => {
           .post('/user/login')
           .send(userData)
           .expect(200)
-          .then((res) => {
-            console.log('ADIM U', res.body);
-            checkUser = res.body;
-            return res.body.token;
-          })
+          .then(res => res.body.token)
           .then(token => request(app.callback())
             .post('/calendar')
             .set('Authorization', `Bearer ${token}`)
             .send(testCalendar)
             .expect(201)
             .then((res) => {
-              console.log('CALENDAR ->', res.body);
-              // expect(res.body.user).to.equal(checkUser.id);
-              // expect(res.body.title).to.equal(reservation.title);
-              // expect(res.body.hour).to.equal(reservation.hour);
-              // expect(typeof res.body._id).to.equal('string');
+              delete res.body._id;
+              delete res.body.__v;
+              res.body.daysFree.forEach(d => delete d._id);
+              expect(res.body).to.deep.equal(testCalendar);
             })));
     });
-    // it('creates new user', () => {
-    //   const userData = {
-    //     email: 'test-reservation2@test.com',
-    //     password: 'testPassword',
-    //   };
-    //   const reservation = {
-    //     hour: 10,
-    //     title: 'testREservation 1',
-    //     day: '2019-9-13',
-    //   };
-    //   let checkUser;
-    //   return request(app.callback())
-    //     .post('/user')
-    //     .send(userData)
-    //     .expect(201)
-    //     .then(() => {})
-    //     .then(() => request(app.callback())
-    //       .post('/user/login')
-    //       .send(userData)
-    //       .expect(200)
-    //       .then((res) => {
-    //         checkUser = res.body;
-    //         return res.body.token;
-    //       })
-    //       .then(token => request(app.callback())
-    //         .post('/reservation')
-    //         .set('Authorization', `Bearer ${token}`)
-    //         .send(reservation)
-    //         .expect(422)
-    //         .then((res) => {
-    //           expect(res.body.error).to.equal('Hour already reserved');
-    //         })));
-    // });
+    it('returns 422 when missing workStart', () => {
+      const userData = {
+        email: 'test-admin2@test.com',
+        password: 'testPassword',
+        admin: true,
+      };
+      const testCalendar = {
+        workEnd: 16,
+        daysFree: [
+          { date: '2019-9-1' }, { date: '2019-9-2' }, { date: '2019-9-14' }, { date: '2019-9-25' },
+        ],
+      };
+      return request(app.callback())
+        .post('/user')
+        .send(userData)
+        .expect(201)
+        .then(() => {})
+        .then(() => request(app.callback())
+          .post('/user/login')
+          .send(userData)
+          .expect(200)
+          .then(res => res.body.token)
+          .then(token => request(app.callback())
+            .post('/calendar')
+            .set('Authorization', `Bearer ${token}`)
+            .send(testCalendar)
+            .expect(422)
+            .then((res) => {
+              expect(res.body.error).to.equal('workStart and workEnd hour required');
+            })));
+    });
   });
 });
