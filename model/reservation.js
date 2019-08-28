@@ -16,7 +16,7 @@ const reservationSchema = new Schema({
     required: true,
     ref: 'User',
   },
-  consfirmed: {
+  confirmed: {
     type: Boolean,
     default: false,
   },

@@ -1,6 +1,11 @@
 const Day = require('../model/day');
+const Calendar = require('../model/calendar');
 
 async function set(r, userId) {
+  const calendar = await Calendar.findOne({});
+  if(r.hour < calendar.workStart || r.hour > calendar.workEnd) {
+    throw new Error('Reservation not possible for this hour');
+  }
   const date = r.day;
   delete r.day;
   let day = await Day.findOne({ date });
@@ -9,14 +14,15 @@ async function set(r, userId) {
       date,
     });
   }
-  r.user = userId;
   const checkHour = day.reservations.find(i => i.hour === r.hour);
   if(checkHour) {
     throw new Error('Hour already reserved');
   }
-  day.reservations.push(r);
+  r.user = userId;
+  const newReservation = day.reservations.create(r);
+  day.reservations.push(newReservation);
   await day.save();
-  return day;
+  return newReservation._doc;
 }
 
 module.exports = {

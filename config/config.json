@@ -3,12 +3,14 @@
     "APP_NAME": "kalendarz_rezerwacji1.0v1",
     "MONGODB_URI": "mongodb://localhost:27017/kalendarz-test",
     "PORT": 3001,
-    "secret": "testSecret"
+    "secret": "testSecret",
+    "calendarLength": 100
   },
   "dev": {
     "APP_NAME": "kalendarz_rezerwacji1.0v1",
     "MONGODB_URI": "mongodb://localhost:27017/kalendarz-dev",
-    "PORT": 3000
+    "PORT": 3000,
+    "calendarLength": 100
   },
   "production": {
     "APP_NAME": "kalendarz_rezerwacji1.0v1",

@@ -95,27 +95,47 @@ describe('User endpoints', () => {
     });
   });
   describe('POST /user/login', () => {
-    it('returns 200 and token', async () => {
-      it('creates new user', () => {
-        const userData = {
-          email: 'api-user-test1@test.com',
-          password: 'testPassword',
-        };
-        return request(app.callback())
+    it('returns 200 and token', () => {
+      const userData = {
+        email: 'api-user-test11@test.com',
+        password: 'testPassword',
+      };
+      return request(app.callback())
+        .post('/user')
+        .send(userData)
+        .expect(201)
+        .then(async (res) => {
+          expect(res.body).to.have.property('id');
+          expect(res.body).to.have.property('email');
+          expect(res.body).to.have.property('createdAt');
+          expect(res.body.id).to.be.a('string');
+          expect(res.body.email).to.equal(userData.email);
+          const userFromDb = await User.findOne({ _id: res.body.id });
+          expect(userFromDb.email).to.equal(res.body.email);
+          expect(res.body.token).to.be.an('string');
+        })
+        .then(() => request(app.callback())
           .post('/user/login')
           .send(userData)
           .expect(200)
-          .then(async (res) => {
-            expect(res.body).to.have.property('id');
-            expect(res.body).to.have.property('email');
-            expect(res.body).to.have.property('createdAt');
-            expect(res.body.id).to.be.a('string');
+          .then((res) => {
             expect(res.body.email).to.equal(userData.email);
-            const userFromDb = await User.findOne({ _id: res.body.id });
-            expect(userFromDb.email).to.equal(res.body.email);
             expect(res.body.token).to.be.an('string');
-          });
-      });
+            expect(res.body.password).to.equal(undefined);
+          }));
+    });
+    it('returns 401 and error (User not found) when try to login with wrong credentials', () => {
+      const userData = {
+        email: 'api-user-test10@test.com',
+        password: 'testPassword',
+      };
+      return request(app.callback())
+        .post('/user/login')
+        .send(userData)
+        .expect(401)
+        .then(async (res) => {
+          expect(res.body.error).to.equal('User not found');
+        });
     });
   });
 });

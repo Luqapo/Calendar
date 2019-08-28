@@ -4,11 +4,9 @@ const userService = require('../../service/user');
 const User = require('../../model/user');
 const appInit = require('../../app');
 
-let app;
-
 describe('User service', () => {
   before(async () => {
-    app = await appInit();
+    await appInit();
     await User.deleteMany({});
   });
 
