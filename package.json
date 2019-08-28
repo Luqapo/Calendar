@@ -15,7 +15,7 @@
     "check-coverage": true,
     "lines": 95,
     "statements": 95,
-    "branches": 100,
+    "branches": 95,
     "exclude": [
       "test/**",
       "node_modules/**"

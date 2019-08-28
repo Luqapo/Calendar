@@ -46,15 +46,35 @@ async function block(r, userId) {
 }
 
 async function getAll() {
-  console.log(await Day.find({}));
   const all = [];
   const days = await Day.find({});
   days.forEach(d => all.push(...d.reservations));
-  return all.map(i => i._doc);
+  return all;
+}
+
+async function deleteReservation(r) {
+  const day = await Day.findOne({ date: r.date });
+  day.reservations.id(r._id).remove();
+  await day.save();
+}
+
+async function confirm(r) {
+  const day = await Day.findOne({ date: r.date });
+  const reservation = day.reservations.id(r._id);
+  reservation.confirmed = true;
+  await day.save();
+}
+
+async function getUserRservetions(userId) {
+  const all = await getAll();
+  return all.filter(r => String(r.user) === String(userId));
 }
 
 module.exports = {
   set,
   block,
   getAll,
+  deleteReservation,
+  confirm,
+  getUserRservetions,
 };

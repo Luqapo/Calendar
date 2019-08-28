@@ -33,15 +33,29 @@ module.exports = [
     scope: 'admin',
   }, {
     // creating user
+    path: /^\/reservation\/confirm\/?$/,
+    method: 'POST',
+    scope: 'admin',
+  }, {
+    // creating user
+    path: /^\/reservation\/mine\/?$/,
+    method: 'GET',
+    scope: 'user',
+  }, {
+    // creating user
     path: /^\/reservation\/?$/,
     method: 'POST',
     scope: 'user',
-  },
-  {
+  }, {
     // creating user
     path: /^\/reservation\/?$/,
     method: 'GET',
     scope: 'admin',
+  }, {
+    // creating user
+    path: /^\/reservation\/?$/,
+    method: 'DELETE',
+    scope: 'user',
   }, {
     // creating user
     path: /^\/calendar\/?$/,

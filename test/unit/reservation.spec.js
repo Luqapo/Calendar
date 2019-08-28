@@ -116,7 +116,7 @@ describe('Reservation service', () => {
       await User.deleteMany({});
       await Day.deleteMany({});
     });
-    it('makes new reservations', async () => {
+    it('returns all reservations', async () => {
       const createdUser = await service.user.create({
         email: 'testREservA@test.com',
         password: 'testreserv',
@@ -151,6 +151,110 @@ describe('Reservation service', () => {
       const all = [];
       checkDays.forEach(d => all.push(...d.reservations));
       expect(all.length).to.equal(res.length);
+    });
+  });
+  describe('delete reservation', () => {
+    before(async () => {
+      await appInit();
+      await User.deleteMany({});
+      await Day.deleteMany({});
+    });
+    it('delete reservation', async () => {
+      const createdUser = await service.user.create({
+        email: 'testREservD@test.com',
+        password: 'testreserv',
+      });
+      await service.reservation.set({
+        hour: 10,
+        title: 'testREservation 1',
+        date: '2019-8-30',
+      }, createdUser.id);
+      const check2 = await service.reservation.set({
+        hour: 15,
+        title: 'testREservation 2',
+        date: '2019-8-30',
+      }, createdUser.id);
+      await service.reservation.set({
+        hour: 11,
+        title: 'testREservation 3',
+        date: '2019-9-6',
+      }, createdUser.id);
+      await service.reservation.set({
+        hour: 8,
+        title: 'testREservation 4',
+        date: '2019-9-17',
+      }, createdUser.id);
+      await service.reservation.deleteReservation(check2);
+      const day = await Day.findOne({ date: '2019-8-30' });
+      const checkDlete = day.reservations.id(check2._id);
+      expect(checkDlete).to.equal(null);
+    });
+  });
+  describe('confirm reservation', () => {
+    it('confirm reservation', async () => {
+      const createdUser = await service.user.create({
+        email: 'testREservConf@test.com',
+        password: 'testreserv',
+      });
+      const res = await service.reservation.set({
+        hour: 10,
+        title: 'testREservation 1',
+        date: '2019-10-2',
+      }, createdUser.id);
+      await service.reservation.confirm(res);
+      const day = await Day.findOne({ date: res.date });
+      const checkeConfirm = day.reservations.id(res._id);
+      expect(checkeConfirm.confirmed).to.equal(true);
+    });
+  });
+  describe('get user reservations', () => {
+    before(async () => {
+      await appInit();
+      await User.deleteMany({});
+      await Day.deleteMany({});
+    });
+    it('returns all user reservations', async () => {
+      const createdUser = await service.user.create({
+        email: 'testREserAll@test.com',
+        password: 'testreserv',
+      });
+      await service.reservation.set({
+        hour: 13,
+        title: 'testREservation 1',
+        date: '2019-8-30',
+      }, createdUser.id);
+      await service.reservation.set({
+        hour: 16,
+        title: 'testREservation 2',
+        date: '2019-8-30',
+      }, createdUser.id);
+      await service.reservation.set({
+        hour: 12,
+        title: 'testREservation 2',
+        date: '2019-11-11',
+      }, createdUser.id);
+      const createdUser2 = await service.user.create({
+        email: 'testREserAl2l@test.com',
+        password: 'testreserv',
+      });
+      await service.reservation.set({
+        hour: 11,
+        title: 'testREservation 1',
+        date: '2019-9-30',
+      }, createdUser2.id);
+      await service.reservation.set({
+        hour: 8,
+        title: 'testREservation 2',
+        date: '2019-8-30',
+      }, createdUser2.id);
+      await service.reservation.set({
+        hour: 15,
+        title: 'testREservation 2',
+        date: '2019-11-11',
+      }, createdUser2.id);
+      const all = await service.reservation.getUserRservetions(createdUser2.id);
+      expect(all.length).to.equal(3);
+      expect(all.find(r => String(r.user) === String(createdUser.id))).to.equal(undefined);
     });
   });
 });
