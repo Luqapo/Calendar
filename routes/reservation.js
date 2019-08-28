@@ -46,7 +46,7 @@ router.delete('/', async (ctx, next) => {
   return next();
 });
 
-router.get('/mine', async (ctx, next) => {
+router.get('/my', async (ctx, next) => {
   const reserv = await service.reservation.getUserRservetions(ctx.state.user._id);
   ctx.body = reserv;
   ctx.status = 200;

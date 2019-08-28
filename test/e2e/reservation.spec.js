@@ -249,7 +249,7 @@ describe('Reservation endpoints', () => {
               .expect(204))));
     });
   });
-  describe('GET /reservation/mine', () => {
+  describe('GET /reservation/my', () => {
     before(async () => {
       await User.deleteMany({});
       await Day.deleteMany({});
@@ -301,7 +301,7 @@ describe('Reservation endpoints', () => {
             .expect(201)
             .then(res => res.body)
             .then(() => request(app.callback())
-              .get('/reservation/mine')
+              .get('/reservation/my')
               .set('Authorization', `Bearer ${user2.token}`)
               .expect(200)
               .then((res) => {

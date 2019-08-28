@@ -38,7 +38,7 @@ module.exports = [
     scope: 'admin',
   }, {
     // creating user
-    path: /^\/reservation\/mine\/?$/,
+    path: /^\/reservation\/my\/?$/,
     method: 'GET',
     scope: 'user',
   }, {
