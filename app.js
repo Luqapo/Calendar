@@ -47,7 +47,7 @@ function init() {
   if(!appPromise) {
     appPromise = new Promise(async (resolve) => {
       app.context.mongoose = await dbInit;
-      app.listen(port);
+      app.listen(port, () => console.log(`App listen on port ${port}`));
       resolve(app);
     });
   }
