@@ -28,9 +28,9 @@ describe('Reservation service', () => {
         date: '2019-8-30',
       }, createdUser.id);
       const checkDay = await Day.findOne({ date: '2019-8-30' });
-      expect(checkDay._doc.reservations.find(r => String(r._id) === String(check1._id))._doc).to
+      expect(checkDay.toJSON().reservations.find(r => String(r._id) === String(check1._id))).to
         .deep.equal(check1);
-      expect(checkDay._doc.reservations.find(r => String(r._id) === String(check2._id))._doc).to
+      expect(checkDay.toJSON().reservations.find(r => String(r._id) === String(check2._id))).to
         .deep.equal(check2);
     });
     it('throws error when reservation hour already taken', async () => {
@@ -90,7 +90,7 @@ describe('Reservation service', () => {
       }, createdUser.id);
       expect(check1.blocked).to.equal(true);
       const checkDay = await Day.findOne({ date: '2019-10-11' });
-      expect(checkDay._doc.reservations.find(r => String(r._id) === String(check1._id))._doc).to
+      expect(checkDay.toJSON().reservations.find(r => String(r._id) === String(check1._id))).to
         .deep.equal(check1);
     });
     it('throws error when try to block already reserved hour', async () => {
@@ -142,9 +142,9 @@ describe('Reservation service', () => {
         date: '2019-9-17',
       }, createdUser.id);
       const checkDay = await Day.findOne({ date: '2019-8-30' });
-      expect(checkDay._doc.reservations.find(r => String(r._id) === String(check1._id))._doc).to
+      expect(checkDay.toJSON().reservations.find(r => String(r._id) === String(check1._id))).to
         .deep.equal(check1);
-      expect(checkDay._doc.reservations.find(r => String(r._id) === String(check2._id))._doc).to
+      expect(checkDay.toJSON().reservations.find(r => String(r._id) === String(check2._id))).to
         .deep.equal(check2);
       const res = await service.reservation.getAll();
       const checkDays = await Day.find({});

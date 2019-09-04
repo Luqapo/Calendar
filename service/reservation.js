@@ -23,7 +23,7 @@ async function set(r, userId) {
   const newReservation = day.reservations.create(r);
   day.reservations.push(newReservation);
   await day.save();
-  return newReservation._doc;
+  return newReservation.toObject();
 }
 
 async function block(r, userId) {
@@ -42,14 +42,14 @@ async function block(r, userId) {
   const newReservation = day.reservations.create(r);
   day.reservations.push(newReservation);
   await day.save();
-  return newReservation._doc;
+  return newReservation.toJSON();
 }
 
 async function getAll() {
   const all = [];
   const days = await Day.find({});
   days.forEach(d => all.push(...d.reservations));
-  return all;
+  return all.map(r => r.toJSON());
 }
 
 async function deleteReservation(r) {

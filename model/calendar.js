@@ -21,11 +21,6 @@ const calendarSchema = new Schema({
   ],
 });
 
-calendarSchema.methods.getPublicFields = function getPublicFields() {
-  const calendar = this.toObject();
-  return calendar;
-};
-
 const Calendar = mongoose.model('Calendar', calendarSchema);
 
 module.exports = Calendar;

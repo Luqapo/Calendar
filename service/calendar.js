@@ -32,7 +32,7 @@ async function set(data) {
   }
   await Calendar.deleteMany({});
   const calendar = await Calendar.create(data);
-  return calendar.getPublicFields();
+  return calendar.toJSON();
 }
 
 module.exports = {

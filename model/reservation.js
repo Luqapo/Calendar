@@ -31,5 +31,4 @@ const reservationSchema = new Schema({
   timestamps: true,
 });
 
-
 module.exports = reservationSchema;
